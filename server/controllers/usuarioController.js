@@ -135,8 +135,6 @@ exports.login = async (req, res) => {
       return res.status(400).json({ msg: 'Funcionários devem usar matrícula para login.' });
     }
 
-    console.log({ email, matricula, senha });
-
     const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
     if (!senhaCorreta) {
       return res.status(401).json({ msg: 'Senha incorreta.' });
@@ -156,6 +154,7 @@ exports.login = async (req, res) => {
         id: usuario._id,
         tipo: usuario.tipo,
         nome: usuario.nomeCompleto,
+        email: usuario.email,
         empresa: usuario.empresa?.nome,
         cargo: usuario.cargo?.nome,
         setor: usuario.setor?.nome
@@ -165,5 +164,38 @@ exports.login = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Erro ao fazer login.' });
+  }
+};
+
+exports.atualizarAdministrador = async (req, res) => {
+  const userId = req.usuario.id;
+  const { nomeCompleto, email, senha } = req.body;
+
+  try {
+    const atualizacoes = { nomeCompleto, email };
+
+    if (senha) {
+      const senhaHash = await bcrypt.hash(senha, 10);
+      atualizacoes.senha = senhaHash;
+    }
+
+    const usuarioAtualizado = await Usuario.findByIdAndUpdate(
+      userId,
+      { $set: atualizacoes },
+      { new: true }
+    );
+
+    res.json({
+      msg: 'Administrador atualizado com sucesso.',
+      usuario: {
+        id: usuarioAtualizado._id,
+        nome: usuarioAtualizado.nomeCompleto,
+        email: usuarioAtualizado.email,
+        tipo: usuarioAtualizado.tipo,
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Erro ao atualizar administrador.' });
   }
 };

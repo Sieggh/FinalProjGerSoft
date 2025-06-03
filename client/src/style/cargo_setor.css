@@ -1,0 +1,96 @@
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h3 {
+  font-size: 21px;
+  font-weight: 600;
+  color: #333;
+}
+
+.btn-adicionar {
+  background-color: #5a4df3;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(90, 77, 243, 0.3);
+}
+
+/* Busca */
+.card-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.input-busca {
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Tabela */
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+.tabela th,
+.tabela td {
+  padding: 12px;
+  border: 1px solid #eee;
+  text-align: left;
+  font-size: 14px;
+}
+
+.tabela th {
+  background-color: #f8f8f8;
+  font-weight: 600;
+  color: #444;
+}
+
+.acoes {
+  text-align: center;
+}
+
+.acao {
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.editar {
+  color: #000000;
+  margin-right: 5px;
+}
+
+.excluir {
+  color: #d33;
+}
+
+/* Paginação */
+.paginacao {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.paginacao button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.paginacao button.ativo {
+  background-color: #5a4df3;
+  color: white;
+}

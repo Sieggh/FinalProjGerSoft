@@ -7,6 +7,8 @@ const path = require('path');
 const pontoRoutes = require('./routes/api/ponto');
 const usuarioRoutes = require('./routes/api/usuarios');
 const importRoutes = require('./routes/api/importacao');
+const cargoRoutes = require('./routes/api/cargos');
+const setorRoutes = require('./routes/api/setores');
 
 
 app.use(cors()) // to allow cross origin requests
@@ -22,5 +24,7 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use('/api/ponto', pontoRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/importar', importRoutes);
+app.use('/api/cargos', cargoRoutes);
+app.use('/api/setores', setorRoutes);
 
 app.listen(process.env.PORT, () => console.log(`App listening at http://localhost:${process.env.PORT}`))

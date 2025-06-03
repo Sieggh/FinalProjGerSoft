@@ -1,0 +1,84 @@
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: #1e1e2f;
+  color: white;
+  padding: 20px;
+}
+
+.sidebar nav a {
+  display: block;
+  color: white;
+  margin: 15px 0;
+  text-decoration: none;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-icon {
+  cursor: pointer;
+}
+
+.dropdown {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-shadow: 0px 0px 6px rgba(0,0,0,0.1);
+}
+
+.content-area {
+  padding: 20px;
+  background: #f9f9f9;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.menu {
+  margin-top: 20px;
+}
+
+.menu-section {
+  margin-top: 20px;
+  cursor: pointer;
+  padding: 10px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.submenu a {
+  display: block;
+  padding: 6px 20px;
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.submenu a:hover {
+  background-color: #2b2b40;
+  color: #fff;
+}
+
+.sidebar a {
+  display: block;
+  padding: 10px;
+  color: white;
+  text-decoration: none;
+}
+
+.sidebar a.active {
+  background-color: #33334d;
+  color: #ffffff;
+  font-weight: bold;
+  border-left: 4px solid #e63f3f;
+}

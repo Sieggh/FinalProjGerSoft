@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
+import DashboardLayout from './pages/dashboard/DashboardLayout';
 
-const App = () => {
+function App() {
   const [usuario, setUsuario] = useState(null);
 
   useEffect(() => {
@@ -9,26 +11,17 @@ const App = () => {
     if (user) setUsuario(JSON.parse(user));
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
-    setUsuario(null); // volta para tela de login
-  };
-
   return (
-    <div>
-      {!usuario ? (
-        <Login onLogin={setUsuario} />
-      ) : (
-        <div>
-          <h2>Bem-vindo, {usuario.nome || usuario.usuario}</h2>
-          <button onClick={handleLogout}>Sair</button>
-        </div>
-      )}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={!usuario ? <Login onLogin={setUsuario} /> : <Navigate to="/dashboard" />} />
+        <Route path="/dashboard/*" element={usuario?.tipo === 'administrador' ? <DashboardLayout onLogout={() => {
+          localStorage.clear();
+          setUsuario(null);
+        }} /> : <Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
   );
-};
-
-
+}
 
 export default App;

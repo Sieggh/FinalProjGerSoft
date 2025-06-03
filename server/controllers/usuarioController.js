@@ -24,13 +24,11 @@ exports.cadastrarAdministrador = async (req, res) => {
       await empresa.save();
     }
 
-    const senhaHash = await bcrypt.hash(senha, 10);
-
     // Cria usuário administrador
     const novoUsuario = new Usuario({
       tipo: 'administrador',
       email,
-      senha: senhaHash,
+      senha: senha,
       nomeCompleto,
       empresa: empresa._id
     });
@@ -88,8 +86,6 @@ exports.cadastrarFuncionario = async (req, res) => {
       await setor.save();
     }
 
-    const senhaHash = await bcrypt.hash(senha, 10);
-
     // Cria usuário funcionário
     const novoFuncionario = new Usuario({
       tipo: 'funcionario',
@@ -97,7 +93,7 @@ exports.cadastrarFuncionario = async (req, res) => {
       cpf,
       matricula,
       dataAdmissao,
-      senha: senhaHash,
+      senha: senha,
       empresa: empresa._id,
       cargo: cargo._id,
       setor: setor._id
@@ -138,6 +134,8 @@ exports.login = async (req, res) => {
     if (usuario.tipo === 'funcionario' && !matricula) {
       return res.status(400).json({ msg: 'Funcionários devem usar matrícula para login.' });
     }
+
+    console.log({ email, matricula, senha });
 
     const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
     if (!senhaCorreta) {

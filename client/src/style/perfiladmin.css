@@ -1,11 +1,3 @@
-.perfil-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 25px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  max-width: 100%;
-}
-
 .perfil-content {
   display: flex;
   gap: 40px;
@@ -16,6 +8,13 @@
   flex: 1;
   display: flex;
   gap: 40px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  font-size: 17px;
+  color: #333;
 }
 
 .coluna {
@@ -69,4 +68,8 @@
   padding: 8px 20px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.full-width {
+  width: 48.5%;
 }

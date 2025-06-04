@@ -2,17 +2,16 @@ const Cargo = require('../models/cargo');
 const Usuario = require('../models/usuario');
 const Empresa = require('../models/empresa');
 
+
 exports.listarPorEmpresa = async (req, res) => {
   try {
     const idUsuario = req.usuario.id;
     const usuario = await Usuario.findById(idUsuario);
 
-    // Busca todos os cargos da empresa do admin
-    const cargos = await Cargo.find({ empresa: usuario.empresa });
+    const cargos = await Cargo.find({ empresa: usuario.empresa }).sort({ nome: 1 });
 
-    // Conta quantos funcionários estão em cada cargo
     const cargosComQuantidade = await Promise.all(cargos.map(async (cargo) => {
-      const count = await Usuario.countDocuments({ cargo: cargo._id });
+    const count = await Usuario.countDocuments({ cargo: cargo._id });
       return {
         id: cargo._id,
         nome: cargo.nome,

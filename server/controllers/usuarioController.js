@@ -108,6 +108,40 @@ exports.cadastrarFuncionario = async (req, res) => {
   }
 };
 
+exports.listarUsuarios = async (req, res) => {
+  try {
+    const usuarioLogado = await Usuario.findById(req.usuario.id);
+
+    if (!usuarioLogado || !usuarioLogado.empresa) {
+      return res.status(403).json({ msg: 'Usuário sem empresa associada.' });
+    }
+
+    const usuarios = await Usuario.find({ empresa: usuarioLogado.empresa })
+      .populate('cargo', 'nome')
+      .populate('setor', 'nome')
+      .populate('empresa', 'nome')
+      .select('nomeCompleto matricula tipo cargo setor empresa');
+
+    const formatados = usuarios.map((u) => ({
+      id: u._id,
+      nomeCompleto: u.nomeCompleto,
+      matricula: u.matricula || '—',
+      tipo: u.tipo,
+      empresa: u.empresa?.nome || '—',
+      cargo: u.cargo?.nome || '—',
+      setor: u.setor?.nome || '—',
+    }));
+
+
+
+    res.json(formatados);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Erro ao buscar usuários.' });
+  }
+};
+
+
 exports.login = async (req, res) => {
   const { email, matricula, senha } = req.body;
 
@@ -197,5 +231,29 @@ exports.atualizarAdministrador = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Erro ao atualizar administrador.' });
+  }
+};
+
+exports.listarAdministradores = async (req, res) => {
+  try {
+    const usuarioLogado = await Usuario.findById(req.usuario.id);
+
+    if (!usuarioLogado || !usuarioLogado.empresa) {
+      return res.status(403).json({ msg: 'Usuário sem empresa associada.' });
+    }
+
+    const admins = await Usuario.find({ tipo: 'administrador', empresa: usuarioLogado.empresa })
+      .select('nomeCompleto email empresa');
+
+    const formatados = admins.map((admin) => ({
+      id: admin._id,
+      nomeCompleto: admin.nomeCompleto,
+      email: admin.email || '—',
+    }));
+
+    res.json(formatados);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Erro ao buscar administradores.' });
   }
 };

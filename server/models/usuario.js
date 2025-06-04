@@ -7,7 +7,7 @@ const UsuarioSchema = new mongoose.Schema({
   cpf: { type: String },
   matricula: { type: String },
   dataAdmissao: { type: Date },
-  email: { type: String, unique: true },
+  email: { type: String },
   senha: { type: String, required: true },
   cargo: { type: mongoose.Schema.Types.ObjectId, ref: 'Cargo' },
   setor: { type: mongoose.Schema.Types.ObjectId, ref: 'Setor' },

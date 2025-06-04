@@ -28,9 +28,6 @@ const Sidebar = () => {
             <Link to="/dashboard/funcionarios" className={isActive('/dashboard/funcionarios') ? 'active' : ''}>
               Funcionários
             </Link>
-            <Link to="/dashboard/empresas" className={isActive('/dashboard/empresas') ? 'active' : ''}>
-              Empresas
-            </Link>
             <Link to="/dashboard/setores" className={isActive('/dashboard/setores') ? 'active' : ''}>
               Setores
             </Link>
@@ -39,6 +36,12 @@ const Sidebar = () => {
             </Link>
           </div>
         )}
+        <Link to="/dashboard/empresas" className={isActive('/dashboard/empresas') ? 'active' : ''}>
+          Empresas
+        </Link>
+        <Link to="/dashboard/administradores" className={isActive('/dashboard/administradores') ? 'active' : ''}>
+          Administradores
+        </Link>
       </nav>
     </div>
   );

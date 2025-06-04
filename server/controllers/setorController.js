@@ -7,7 +7,7 @@ exports.listarPorEmpresa = async (req, res) => {
     const idUsuario = req.usuario.id;
     const usuario = await Usuario.findById(idUsuario);
 
-    const setores = await Setor.find({ empresa: usuario.empresa });
+    const setores = await Setor.find({ empresa: usuario.empresa }).sort({ nome: 1 });
 
     const setoresComQuantidade = await Promise.all(setores.map(async (setor) => {
     const count = await Usuario.countDocuments({ setor: setor._id });

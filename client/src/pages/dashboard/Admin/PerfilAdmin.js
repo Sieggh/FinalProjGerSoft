@@ -108,8 +108,9 @@ const PerfilAdmin = () => {
 
   return (
       <div className="card">
-        <h2>Editar Perfil Administrador</h2>
-
+        <div className="card-header">
+            <h3>Editar Perfil Administrador</h3>
+        </div>
         <div className="perfil-content">
           <div className="perfil-form">
             <div className="coluna">

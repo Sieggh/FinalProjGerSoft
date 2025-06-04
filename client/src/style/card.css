@@ -5,3 +5,16 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   max-width: 100%;
 }
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h3 {
+  font-size: 21px;
+  font-weight: 600;
+  color: #333;
+}

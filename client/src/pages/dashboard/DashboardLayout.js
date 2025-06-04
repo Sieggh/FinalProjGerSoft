@@ -3,14 +3,20 @@ import { Routes, Route } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import Home from './Home';
-import Funcionarios from './Funcionarios';
-import Empresas from './Empresas';
+import Funcionarios from './Funcionarios/Funcionarios';
+import Empresas from './Empresa/Empresas';
 import Setores from './Setor/Setores';
-import Cargos from './Cargos';
+import Cargos from './Cargos/Cargos';
 import PerfilAdmin from './Admin/PerfilAdmin';
-import Administradores from './Admin/Administradores'
-import CadastroAdmin from './Admin/CadastroAdmin'
-import CadastroSetor from './Setor/CadastroSetor'
+import Administradores from './Admin/Administradores';
+import CadastroAdmin from './Admin/CadastroAdmin';
+import CadastroSetor from './Setor/CadastroSetor';
+import EditarSetor from './Setor/EditarSetor';
+import EditarCargo from './Cargos/EditarCargo';
+import CadastroCargo from './Cargos/CadastroCargo';
+import EditarEmpresa from './Empresa/EditarEmpresa';
+import EditarFuncionario from './Funcionarios/EditarFuncionario';
+import CadastroFuncionario from './Funcionarios/CadastroFuncionario';
 import '../../style/dashboard.css';
 import '../../style/perfiladmin.css';
 import '../../style/navbar.css';
@@ -35,6 +41,12 @@ const DashboardLayout = ({ onLogout }) => {
             <Route path="/administradores" element={<Administradores />} />
             <Route path="/cadastroadmin" element={<CadastroAdmin />} />
             <Route path="/cadastrosetor" element={<CadastroSetor />} />
+            <Route path="/editarsetor/:id" element={<EditarSetor />} />
+            <Route path="/editarcargo/:id" element={<EditarCargo />} />
+            <Route path="/editarempresa/:id" element={<EditarEmpresa />} />
+            <Route path="/cadastrocargo" element={<CadastroCargo />} />
+            <Route path="/editarfuncionario/:id" element={<EditarFuncionario />} />
+            <Route path="/cadastrofuncionario" element={<CadastroFuncionario />} />
           </Routes>
         </div>
       </div>

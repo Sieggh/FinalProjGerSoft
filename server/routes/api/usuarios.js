@@ -4,21 +4,21 @@ const usuarioController = require('../../controllers/usuarioController');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const authMiddleware = require('../../middlewares/authMiddleware');
-const importController = require('../../controllers/importController');
 
 // POST /api/usuarios/admin
-router.post('/admin', usuarioController.cadastrarAdministrador);
+router.post('/admin', authMiddleware, usuarioController.cadastrarAdministrador);
 router.put('/admin', authMiddleware, usuarioController.atualizarAdministrador);
 router.get('/administradores', authMiddleware, usuarioController.listarAdministradores);
 
 // POST /api/usuarios/funcionario
-router.post('/funcionario', usuarioController.cadastrarFuncionario);
+router.post('/funcionario', authMiddleware, usuarioController.cadastrarFuncionario);
+router.get('/', authMiddleware, usuarioController.listarUsuarios);
+router.delete('/funcionario/:id', authMiddleware, usuarioController.excluirFuncionario);
+router.put('/funcionario/:id', authMiddleware, usuarioController.editarFuncionario);
+router.get('/funcionario/:id', authMiddleware, usuarioController.buscarFuncionarioPorId);
 
 // POST /api/usuarios/login
 router.post('/login', usuarioController.login);
 
-router.post('/importar', authMiddleware, upload.single('arquivo'), importController.importarFuncionarios);
-
-router.get('/listar', authMiddleware, usuarioController.listarUsuarios);
 
 module.exports = router;

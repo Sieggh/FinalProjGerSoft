@@ -61,3 +61,59 @@ exports.cadastrarCargo = async (req, res) => {
     res.status(500).json({ msg: 'Erro ao cadastrar cargo.' });
   }
 };
+
+exports.editarCargo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nome } = req.body;
+
+    if (!nome) {
+      return res.status(400).json({ msg: 'Nome do cargo é obrigatório.' });
+    }
+
+    const cargo = await Cargo.findById(id);
+    if (!cargo) {
+      return res.status(404).json({ msg: 'Cargo não encontrado.' });
+    }
+
+    cargo.nome = nome;
+    await cargo.save();
+
+    res.status(200).json({ msg: 'Cargo atualizado com sucesso.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Erro ao atualizar cargo.' });
+  }
+};
+
+exports.buscarCargoPorId = async (req, res) => {
+  try {
+    const cargo = await Cargo.findById(req.params.id).populate('empresa', 'nome');
+    if (!cargo) {
+      return res.status(404).json({ msg: 'Cargo não encontrado.' });
+    }
+
+    res.status(200).json(cargo);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Erro ao buscar cargo.' });
+  }
+};
+
+exports.excluirCargo = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Verifica se existe algum usuário vinculado a esse cargo
+    const existeUsuario = await Usuario.findOne({ cargo: id });
+    if (existeUsuario) {
+      return res.status(400).json({ msg: 'Não é possível excluir. Há usuários vinculados a este cargo.' });
+    }
+
+    await Cargo.findByIdAndDelete(id);
+    res.status(200).json({ msg: 'Cargo excluído com sucesso.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Erro ao excluir cargo.' });
+  }
+};

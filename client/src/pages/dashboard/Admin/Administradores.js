@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const Administradores = () => {
   const [admins, setAdmins] = useState([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [filtro, setFiltro] = useState('');
   const adminsPorPagina = 10;
   const navigate = useNavigate();
 
@@ -26,11 +27,15 @@ const Administradores = () => {
     }
   };
 
-  const totalPaginas = Math.ceil(admins.length / adminsPorPagina);
-  const adminsPaginados = admins.slice(
-    (paginaAtual - 1) * adminsPorPagina,
-    paginaAtual * adminsPorPagina
-  );
+    const adminFiltrados = admins.filter((item) =>
+    item.nomeCompleto.toLowerCase().includes(filtro.toLowerCase())
+    );
+
+    const totalPaginas = Math.ceil(adminFiltrados.length / adminsPorPagina);
+    const adminsPaginados = adminFiltrados.slice(
+      (paginaAtual - 1) * adminsPorPagina,
+      paginaAtual * adminsPorPagina
+    );
 
   const mudarPagina = (novaPagina) => {
     if (novaPagina >= 1 && novaPagina <= totalPaginas) {
@@ -48,7 +53,16 @@ const Administradores = () => {
       </div>
 
       <div className="card-controls">
-        <input type="text" placeholder="Buscar administrador" className="input-busca" />
+          <input
+            type="text"
+            placeholder="Buscar administrador"
+            className="input-busca"
+            value={filtro}
+            onChange={(e) => {
+              setFiltro(e.target.value);
+              setPaginaAtual(1); // reseta para primeira página ao buscar
+            }}
+          />
       </div>
 
       <table className="tabela">

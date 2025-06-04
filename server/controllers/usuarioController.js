@@ -116,7 +116,7 @@ exports.listarUsuarios = async (req, res) => {
       return res.status(403).json({ msg: 'Usuário sem empresa associada.' });
     }
 
-    const usuarios = await Usuario.find({ empresa: usuarioLogado.empresa })
+    const usuarios = await Usuario.find({ empresa: usuarioLogado.empresa, tipo: 'funcionario' })
       .populate('cargo', 'nome')
       .populate('setor', 'nome')
       .populate('empresa', 'nome')
@@ -257,3 +257,125 @@ exports.listarAdministradores = async (req, res) => {
     res.status(500).json({ msg: 'Erro ao buscar administradores.' });
   }
 };
+
+exports.excluirFuncionario = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const funcionario = await Usuario.findById(id);
+
+    if (!funcionario) {
+      return res.status(404).json({ msg: 'Funcionário não encontrado.' });
+    }
+
+    if (funcionario.tipo !== 'funcionario') {
+      return res.status(403).json({ msg: 'Você só pode excluir funcionários.' });
+    }
+
+    await funcionario.deleteOne();
+
+    res.status(200).json({ msg: 'Funcionário excluído com sucesso.' });
+  } catch (err) {
+  console.error('Erro ao excluir funcionário:', err);
+  res.status(500).json({ msg: 'Erro ao excluir funcionário.' });
+}
+};
+
+// controllers/usuarioController.js
+
+exports.editarFuncionario = async (req, res) => {
+  const { id } = req.params;
+  const {
+    nomeCompleto,
+    cpf,
+    matricula,
+    dataAdmissao,
+    senha,
+    nomeEmpresa,
+    nomeCargo,
+    nomeSetor
+  } = req.body;
+
+  if (!nomeCompleto || !cpf || !matricula || !dataAdmissao || !nomeEmpresa || !nomeCargo || !nomeSetor) {
+    return res.status(400).json({ msg: 'Preencha todos os campos obrigatórios.' });
+  }
+
+  try {
+    const funcionario = await Usuario.findById(id);
+    if (!funcionario) {
+      return res.status(404).json({ msg: 'Funcionário não encontrado.' });
+    }
+
+    // Verifica empresa
+    let empresa = await Empresa.findOne({ nome: nomeEmpresa });
+    if (!empresa) {
+      empresa = new Empresa({ nome: nomeEmpresa });
+      await empresa.save();
+    }
+
+    // Verifica ou cria cargo
+    let cargo = await Cargo.findOne({ nome: nomeCargo, empresa: empresa._id });
+    if (!cargo) {
+      cargo = new Cargo({ nome: nomeCargo, empresa: empresa._id });
+      await cargo.save();
+    }
+
+    // Verifica ou cria setor
+    let setor = await Setor.findOne({ nome: nomeSetor, empresa: empresa._id });
+    if (!setor) {
+      setor = new Setor({ nome: nomeSetor, empresa: empresa._id });
+      await setor.save();
+    }
+
+    // Atualiza dados
+    funcionario.nomeCompleto = nomeCompleto;
+    funcionario.cpf = cpf;
+    funcionario.matricula = matricula;
+    funcionario.dataAdmissao = dataAdmissao;
+    funcionario.empresa = empresa._id;
+    funcionario.cargo = cargo._id;
+    funcionario.setor = setor._id;
+
+    if (senha && senha.trim() !== '') {
+      funcionario.senha = senha; // será criptografada via pre-save
+    }
+
+    await funcionario.save();
+
+    res.status(200).json({ msg: 'Funcionário atualizado com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao editar funcionário:', err);
+    res.status(500).json({ msg: 'Erro ao editar funcionário.' });
+  }
+};
+
+exports.buscarFuncionarioPorId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const funcionario = await Usuario.findById(id)
+      .populate('cargo', 'nome _id')
+      .populate('setor', 'nome _id')
+      .populate('empresa', 'nome');
+
+    if (!funcionario || funcionario.tipo !== 'funcionario') {
+      return res.status(404).json({ msg: 'Funcionário não encontrado.' });
+    }
+
+    res.status(200).json({
+      nomeCompleto: funcionario.nomeCompleto,
+      cpf: funcionario.cpf,
+      matricula: funcionario.matricula,
+      dataAdmissao: funcionario.dataAdmissao,
+      empresa: funcionario.empresa?.nome || '',
+      nomeCargo: funcionario.cargo?.nome || '',
+      idCargo: funcionario.cargo?._id || '',
+      nomeSetor: funcionario.setor?.nome || '',
+      idSetor: funcionario.setor?._id || ''
+    });
+  } catch (err) {
+    console.error('Erro ao buscar funcionário:', err);
+    res.status(500).json({ msg: 'Erro ao buscar funcionário.' });
+  }
+};
+

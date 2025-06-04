@@ -1,19 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../../middlewares/authMiddleware');
+const authMiddleware = require('../../middlewares/authMiddleware');
 const pontoController = require('../../controllers/pontoController');
 
 // Rota protegida para registrar ponto
-router.post('/registrar', auth, pontoController.registrarPonto);
+router.post('/registrar', authMiddleware, pontoController.registrarPonto);
 
-router.get('/meus', auth, pontoController.listarMeusPontos);
+router.get('/meus', authMiddleware, pontoController.listarMeusPontos);
 
-router.get('/usuario/:id', auth, pontoController.listarPontoDeUsuario);
+router.get('/usuario/:id', authMiddleware, pontoController.listarPontoDeUsuario);
 
 // Funcionário baixa sua folha
-router.get('/pdf', auth, pontoController.gerarPdfPontoFuncionario);
+router.get('/pdf', authMiddleware, pontoController.gerarPdfPontoFuncionario);
 
 // Admin baixa de outro funcionário
-router.get('/pdf/:id', auth, pontoController.gerarPdfPontoFuncionario);
+router.get('/pdf/:id', authMiddleware, pontoController.gerarPdfPontoFuncionario);
 
 module.exports = router;

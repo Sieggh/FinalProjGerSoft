@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const Funcionarios = () => {
   const [funcionarios, setFuncionarios] = useState([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [filtro, setFiltro] = useState('');
   const funcionariosPorPagina = 10;
   const navigate = useNavigate();
 
@@ -16,7 +17,7 @@ const Funcionarios = () => {
   const carregarFuncionarios = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:4000/api/usuarios/listar', {
+      const res = await axios.get('http://localhost:4000/api/usuarios', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -27,11 +28,15 @@ const Funcionarios = () => {
     }
   };
 
-  const totalPaginas = Math.ceil(funcionarios.length / funcionariosPorPagina);
-  const funcionariosPaginados = funcionarios.slice(
-    (paginaAtual - 1) * funcionariosPorPagina,
-    paginaAtual * funcionariosPorPagina
-  );
+    const funcionariosFiltrados = funcionarios.filter((item) =>
+    item.nomeCompleto.toLowerCase().includes(filtro.toLowerCase())
+    );
+
+    const totalPaginas = Math.ceil(funcionariosFiltrados.length / funcionariosPorPagina);
+    const funcionariosPaginados = funcionariosFiltrados.slice(
+      (paginaAtual - 1) * funcionariosPorPagina,
+      paginaAtual * funcionariosPorPagina
+    );
 
   const mudarPagina = (novaPagina) => {
     if (novaPagina >= 1 && novaPagina <= totalPaginas) {
@@ -39,15 +44,41 @@ const Funcionarios = () => {
     }
   };
 
+  const handleExcluir = async (id) => {
+    if (!window.confirm('Tem certeza que deseja excluir este funcionário?')) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:4000/api/usuarios/funcionario/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      alert('Funcionário excluído com sucesso!');
+      carregarFuncionarios(); // atualiza a lista
+    } catch (err) {
+      console.error('Erro ao excluir funcionário:', err);
+      alert('Erro ao excluir funcionário. Verifique se ele ainda está vinculado a algum registro.');
+    }
+  };
+
   return (
     <div className="card">
       <div className="card-header">
         <h3>Funcionários Cadastrados</h3>
-        <button className="btn-adicionar" onClick={() => navigate('/dashboard/funcionarios/novo')}>+ Adicionar</button>
+        <button className="btn-adicionar" onClick={() => navigate('/dashboard/CadastroFuncionario')}>+ Adicionar</button>
         </div>
 
         <div className="card-controls">
-          <input type="text" placeholder="Buscar funcionário" className="input-busca" />
+          <input
+            type="text"
+            placeholder="Buscar funcionários"
+            className="input-busca"
+            value={filtro}
+            onChange={(e) => {
+              setFiltro(e.target.value);
+              setPaginaAtual(1); // reseta para primeira página ao buscar
+            }}
+          />
         </div>
 
       <table className="tabela">
@@ -66,13 +97,13 @@ const Funcionarios = () => {
             <tr key={index}>
               <td>{usuario.nomeCompleto}</td>
               <td>{usuario.matricula}</td>
-              <td>{usuario.cargo || '-'}</td>
-              <td>{usuario.setor || '-'}</td>
+              <td>{usuario.cargo}</td>
+              <td>{usuario.setor}</td>
               <td className="acoes">
-                <FaEdit className="acao editar" />
+                <FaEdit className="acao editar" onClick={() => navigate(`/dashboard/EditarFuncionario/${usuario.id}`)}/>
               </td>
               <td className="acoes">
-                <FaTrash className="acao excluir" />
+                <FaTrash className="acao excluir" onClick={() => handleExcluir(usuario.id)} />
               </td>
             </tr>
           ))}

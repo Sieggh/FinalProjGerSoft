@@ -3,42 +3,42 @@ import { FaTrash, FaEdit } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Setores = () => {
-  const [setores, setSetores] = useState([]);
+const Cargos = () => {
+  const [cargos, setCargos] = useState([]);
   const [empresa, setEmpresa] = useState('');
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [filtro, setFiltro] = useState('');
-  const setoresPorPagina = 10;
+  const cargosPorPagina = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     if (usuario && usuario.empresa) {
       setEmpresa(usuario.empresa);
-      carregarSetores();
+      carregarCargos();
     }
   }, []);
 
-  const carregarSetores = async () => {
+  const carregarCargos = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:4000/api/setores', {
+      const res = await axios.get('http://localhost:4000/api/cargos', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSetores(res.data);
+      setCargos(res.data);
     } catch (err) {
-      console.error('Erro ao buscar setores', err);
+      console.error('Erro ao buscar cargos', err);
     }
   };
 
-    const setoresFiltrados = setores.filter((item) =>
+    const cargosFiltrados = cargos.filter((item) =>
     item.nome.toLowerCase().includes(filtro.toLowerCase())
     );
 
-    const totalPaginas = Math.ceil(setoresFiltrados.length / setoresPorPagina);
-    const setoresPaginados = setoresFiltrados.slice(
-      (paginaAtual - 1) * setoresPorPagina,
-      paginaAtual * setoresPorPagina
+    const totalPaginas = Math.ceil(cargosFiltrados.length / cargosPorPagina);
+    const cargosPaginados = cargosFiltrados.slice(
+      (paginaAtual - 1) * cargosPorPagina,
+      paginaAtual * cargosPorPagina
     );
 
   const mudarPagina = (novaPagina) => {
@@ -47,38 +47,38 @@ const Setores = () => {
     }
   };
 
-    const handleExcluir = async (id) => {
+  const handleExcluir = async (id) => {
     const confirmacao = window.confirm("Tem certeza que deseja excluir?");
     if (!confirmacao) return;
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:4000/api/setores/${id}`, {
+      await axios.delete(`http://localhost:4000/api/cargos/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      alert("Setor excluído com sucesso!");
-      carregarSetores(); // Atualiza a lista
+      alert("Cargo excluído com sucesso!");
+      carregarCargos(); // Atualiza a lista
     } catch (error) {
       console.error(error);
-      const msg = error.response?.data?.msg || "Erro ao excluir setor.";
+      const msg = error.response?.data?.msg || "Erro ao excluir cargo.";
       alert(msg);
     }
-  };
+  };  
 
   return (
       <div className="card">
         <div className="card-header">
-          <h3>Setores da {empresa}</h3>
-          <button className="btn-adicionar" onClick={() => navigate('/dashboard/CadastroSetor')}>+ Adicionar</button>
+          <h3>Cargos da {empresa}</h3>
+          <button className="btn-adicionar" onClick={() => navigate('/dashboard/CadastroCargo')}>+ Adicionar</button>
         </div>
 
         <div className="card-controls">
-          <input 
-            type="text" 
-            placeholder="Buscar setor" 
-            className="input-busca" 
-            value={filtro}  
+          <input
+            type="text"
+            placeholder="Buscar cargo"
+            className="input-busca"
+            value={filtro}
             onChange={(e) => {
               setFiltro(e.target.value);
               setPaginaAtual(1); // reseta para primeira página ao buscar
@@ -96,15 +96,15 @@ const Setores = () => {
             </tr>
           </thead>
           <tbody>
-            {setoresPaginados.map((setor, index) => (
+            {cargosPaginados.map((cargo, index) => (
               <tr key={index}>
-                <td>{setor.nome}</td>
-                <td>{setor.totalFuncionarios || 0}</td>
+                <td>{cargo.nome}</td>
+                <td>{cargo.totalFuncionarios || 0}</td>
                 <td className="acoes">
-                  <FaEdit className="acao editar" onClick={() => navigate(`/dashboard/EditarSetor/${setor.id}`)} />
+                    <FaEdit className="acao editar" onClick={() => navigate(`/dashboard/EditarCargo/${cargo.id}`)} />
                 </td>
                 <td className='acoes'>
-                  <FaTrash className="acao excluir" onClick={() => handleExcluir(setor.id)} />
+                    <FaTrash className="acao excluir" onClick={() => handleExcluir(cargo.id)} />
                 </td>
               </tr>
             ))}
@@ -135,4 +135,4 @@ const Setores = () => {
   );
 };
 
-export default Setores;
+export default Cargos;

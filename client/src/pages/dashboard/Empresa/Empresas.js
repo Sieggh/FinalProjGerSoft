@@ -1,39 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { FaTrash, FaEdit } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { FaEdit } from 'react-icons/fa';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const Cargos = () => {
-  const [cargos, setCargos] = useState([]);
-  const [empresa, setEmpresa] = useState('');
+const Empresas = () => {
+  const [empresas, setEmpresas] = useState([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const cargosPorPagina = 10;
+  const empresasPorPagina = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (usuario && usuario.empresa) {
-      setEmpresa(usuario.empresa);
-      carregarCargos();
-    }
+    buscarEmpresas();
   }, []);
 
-  const carregarCargos = async () => {
+  const buscarEmpresas = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:4000/api/cargos', {
+      const res = await axios.get('http://localhost:4000/api/empresa', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setCargos(res.data);
-    } catch (err) {
-      console.error('Erro ao buscar cargos', err);
+      setEmpresas(res.data);
+    } catch (error) {
+      console.error('Erro ao buscar empresas:', error);
     }
   };
 
-  const totalPaginas = Math.ceil(cargos.length / cargosPorPagina);
-  const cargosPaginados = cargos.slice(
-    (paginaAtual - 1) * cargosPorPagina,
-    paginaAtual * cargosPorPagina
+  const totalPaginas = Math.ceil(empresas.length / empresasPorPagina);
+  const empresasPaginadas = empresas.slice(
+    (paginaAtual - 1) * empresasPorPagina,
+    paginaAtual * empresasPorPagina
   );
 
   const mudarPagina = (novaPagina) => {
@@ -45,12 +40,7 @@ const Cargos = () => {
   return (
       <div className="card">
         <div className="card-header">
-          <h3>Cargos da {empresa}</h3>
-          <button className="btn-adicionar" onClick={() => navigate('/dashboard/cargos/novo')}>+ Adicionar</button>
-        </div>
-
-        <div className="card-controls">
-          <input type="text" placeholder="Buscar cargo" className="input-busca" />
+          <h3>Empresa Cadastrada</h3>
         </div>
 
         <table className="tabela">
@@ -59,19 +49,15 @@ const Cargos = () => {
               <th>Nome</th>
               <th>Número de Funcionários</th>
               <th></th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
-            {cargosPaginados.map((cargo, index) => (
+            {empresasPaginadas.map((empresa, index) => (
               <tr key={index}>
-                <td>{cargo.nome}</td>
-                <td>{cargo.totalFuncionarios || 0}</td>
+                <td>{empresa.nome}</td>
+                <td>{empresa.totalFuncionarios || 0}</td>
                 <td className="acoes">
-                    <FaEdit className="acao editar" />
-                </td>
-                <td className='acoes'>
-                    <FaTrash className="acao excluir" />
+                    <FaEdit className="acao editar" onClick={() => navigate(`/dashboard/EditarEmpresa/${empresa.id}`)}/>
                 </td>
               </tr>
             ))}
@@ -102,4 +88,4 @@ const Cargos = () => {
   );
 };
 
-export default Cargos;
+export default Empresas;

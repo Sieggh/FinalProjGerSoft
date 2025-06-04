@@ -48,3 +48,60 @@ exports.cadastrarSetor = async (req, res) => {
     res.status(500).json({ msg: 'Erro ao cadastrar setor.' });
   }
 };
+
+exports.editarSetor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nome } = req.body;
+
+    if (!nome) {
+      return res.status(400).json({ msg: 'Nome do setor é obrigatório.' });
+    }
+
+    const setor = await Setor.findById(id);
+    if (!setor) {
+      return res.status(404).json({ msg: 'Setor não encontrado.' });
+    }
+
+    setor.nome = nome;
+    await setor.save();
+
+    res.status(200).json({ msg: 'Setor atualizado com sucesso.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Erro ao atualizar setor.' });
+  }
+};
+
+exports.buscarSetorPorId = async (req, res) => {
+  try {
+    const setor = await Setor.findById(req.params.id).populate('empresa', 'nome');
+    
+    if (!setor) {
+      return res.status(404).json({ msg: 'Setor não encontrado.' });
+    }
+
+    res.status(200).json(setor);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Erro ao buscar setor.' });
+  }
+};
+
+exports.excluirSetor = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Verifica se existe algum usuário vinculado a esse setor
+    const existeUsuario = await Usuario.findOne({ setor: id });
+    if (existeUsuario) {
+      return res.status(400).json({ msg: 'Não é possível excluir. Há usuários vinculados a este setor.' });
+    }
+
+    await Setor.findByIdAndDelete(id);
+    res.status(200).json({ msg: 'Setor excluído com sucesso.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Erro ao excluir setor.' });
+  }
+};

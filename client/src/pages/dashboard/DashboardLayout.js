@@ -17,6 +17,8 @@ import CadastroCargo from './Cargos/CadastroCargo';
 import EditarEmpresa from './Empresa/EditarEmpresa';
 import EditarFuncionario from './Funcionarios/EditarFuncionario';
 import CadastroFuncionario from './Funcionarios/CadastroFuncionario';
+import FolhaPonto from './Funcionarios/FolhaPonto';
+import EditarPonto from './Funcionarios/EditarPonto';
 import '../../style/dashboard.css';
 import '../../style/perfiladmin.css';
 import '../../style/navbar.css';
@@ -47,6 +49,8 @@ const DashboardLayout = ({ onLogout }) => {
             <Route path="/cadastrocargo" element={<CadastroCargo />} />
             <Route path="/editarfuncionario/:id" element={<EditarFuncionario />} />
             <Route path="/cadastrofuncionario" element={<CadastroFuncionario />} />
+            <Route path="/folhaponto/:id" element={<FolhaPonto />} />
+            <Route path="/editarponto/:id/:data" element={<EditarPonto />} />
           </Routes>
         </div>
       </div>

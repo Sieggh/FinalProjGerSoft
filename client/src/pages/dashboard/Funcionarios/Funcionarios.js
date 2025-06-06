@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEye, FaTrash } from 'react-icons/fa';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -100,7 +100,7 @@ const Funcionarios = () => {
               <td>{usuario.cargo}</td>
               <td>{usuario.setor}</td>
               <td className="acoes">
-                <FaEdit className="acao editar" onClick={() => navigate(`/dashboard/EditarFuncionario/${usuario.id}`)}/>
+                <FaEye className="acao editar" onClick={() => navigate(`/dashboard/EditarFuncionario/${usuario.id}`)}/>
               </td>
               <td className="acoes">
                 <FaTrash className="acao excluir" onClick={() => handleExcluir(usuario.id)} />

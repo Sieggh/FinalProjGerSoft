@@ -99,7 +99,7 @@ const Setores = () => {
             {setoresPaginados.map((setor, index) => (
               <tr key={index}>
                 <td>{setor.nome}</td>
-                <td>{setor.totalFuncionarios || 0}</td>
+                <td>{setor.quantidadeFuncionarios || 0}</td>
                 <td className="acoes">
                   <FaEdit className="acao editar" onClick={() => navigate(`/dashboard/EditarSetor/${setor.id}`)} />
                 </td>

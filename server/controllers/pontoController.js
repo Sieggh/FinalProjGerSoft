@@ -3,22 +3,18 @@ const Usuario = require('../models/usuario');
 const { calcularResumoDoDia } = require('../utils/pontoUtils');
 
 exports.registrarPonto = async (req, res) => {
-  const idUsuario = req.usuario.id; // vem do authMiddleware
+  const id = req.usuario.id;
   const agora = new Date();
+  agora.setSeconds(0, 0); // <-- ajusta aqui
 
-  // Normaliza a data para 00:00:00 (apenas o dia)
   const inicioDoDia = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
 
   try {
-    let ponto = await Ponto.findOne({
-      usuario: idUsuario,
-      data: inicioDoDia
-    });
+    let ponto = await Ponto.findOne({ usuario: id, data: inicioDoDia });
 
     if (!ponto) {
-      // Primeiro ponto do dia
       ponto = new Ponto({
-        usuario: idUsuario,
+        usuario: id,
         data: inicioDoDia,
         horarios: [agora]
       });
@@ -30,13 +26,16 @@ exports.registrarPonto = async (req, res) => {
       return res.status(400).json({ msg: 'Limite de registros de ponto atingido para hoje.' });
     }
 
-    // Adiciona novo horário
+    const ultimoHorario = ponto.horarios[ponto.horarios.length - 1];
+    if (ultimoHorario && (agora - ultimoHorario) < 60 * 1000) {
+      return res.status(400).json({ msg: 'Espere um minuto antes de registrar novamente.' });
+    }
+
     ponto.horarios.push(agora);
     await ponto.save();
 
-    const tipo = ['entrada 1', 'saída 1', 'entrada 2', 'saída 2'][ponto.horarios.length - 1];
+    const tipo = ['1ª Entrada', '1ª Saída', '2ª Entrada', '2ª Saída'][ponto.horarios.length - 1];
     res.status(200).json({ msg: `Ponto registrado (${tipo}).` });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Erro ao registrar ponto.' });
@@ -44,10 +43,10 @@ exports.registrarPonto = async (req, res) => {
 };
 
 exports.listarMeusPontos = async (req, res) => {
-  const idUsuario = req.usuario.id;
+  const id = req.usuario.id;
 
   try {
-    const pontos = await Ponto.find({ usuario: idUsuario }).sort({ data: -1 });
+    const pontos = await Ponto.find({ usuario: id }).sort({ data: -1 });
 
     const folha = pontos.map(ponto => calcularResumoDoDia(ponto));
 
@@ -64,9 +63,6 @@ exports.listarPontoDeUsuario = async (req, res) => {
 
   try {
     const admin = await Usuario.findById(idAdmin);
-    if (!admin || admin.tipo !== 'administrador') {
-      return res.status(403).json({ msg: 'Acesso negado. Apenas administradores.' });
-    }
 
     const funcionario = await Usuario.findById(idFuncionario);
     if (!funcionario) {
@@ -96,46 +92,138 @@ exports.listarPontoDeUsuario = async (req, res) => {
   }
 };
 
-const PDFDocument = require('pdfkit');
+exports.inserirPontoManual = async (req, res) => {
+  const { id, data, horarios } = req.body;
 
-exports.gerarPdfPontoFuncionario = async (req, res) => {
-  const idUsuario = req.usuario.id;
-  const isAdmin = req.usuario.tipo === 'administrador';
-  const funcionarioId = req.params.id || idUsuario;
+  if (!id || !data || !Array.isArray(horarios)) {
+    return res.status(400).json({ msg: 'Preencha id, data e horarios corretamente.' });
+  }
 
   try {
-    const usuario = await Usuario.findById(funcionarioId);
-    if (!usuario) return res.status(404).json({ msg: 'Usuário não encontrado.' });
-
-    // Impede que funcionário baixe PDF de outro
-    if (!isAdmin && idUsuario !== funcionarioId) {
-      return res.status(403).json({ msg: 'Acesso negado.' });
+    const usuario = await Usuario.findById(id);
+    if (!usuario) {
+      return res.status(404).json({ msg: 'Usuário não encontrado.' });
     }
 
-    const pontos = await Ponto.find({ usuario: funcionarioId }).sort({ data: -1 });
-    const folha = pontos.map(calcularResumoDoDia);
+    // Converte a data para início do dia
+    const dataNormalizada = new Date(`${data}T00:00:00`);
 
-    const doc = new PDFDocument();
-    res.setHeader('Content-Disposition', `attachment; filename=folha-ponto-${usuario.nomeCompleto}.pdf`);
-    res.setHeader('Content-Type', 'application/pdf');
-    doc.pipe(res);
+    // Converte cada horário para Date
+    const horariosConvertidos = horarios.map(h => new Date(`${data}T${h}:00`));
 
-    doc.fontSize(18).text(`Folha de Ponto - ${usuario.nomeCompleto}`, { align: 'center' });
-    doc.moveDown();
+    // Cria ou atualiza o ponto
+    let ponto = await Ponto.findOne({ usuario: id, data: dataNormalizada });
 
-    folha.forEach(p => {
-      doc
-        .fontSize(12)
-        .text(`Data: ${p.data}`)
-        .text(`Horários: ${p.horarios.join(', ') || 'Nenhum'}`)
-        .text(`Total: ${p.totalHorasTrabalhadas} | Status: ${p.status}`)
-        .text(`+ Extra: ${p.extra || '-'} | - Falta: ${p.falta || '-'}`)
-        .moveDown();
-    });
+    if (ponto) {
+      ponto.horarios = horariosConvertidos;
+      await ponto.save();
+    } else {
+      ponto = new Ponto({
+        usuario: id,
+        data: dataNormalizada,
+        horarios: horariosConvertidos
+      });
+      await ponto.save();
+    }
 
-    doc.end();
+    res.status(200).json({ msg: 'Ponto inserido manualmente com sucesso.' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: 'Erro ao gerar PDF.' });
+    res.status(500).json({ msg: 'Erro ao inserir ponto manualmente.' });
+  }
+};
+
+exports.atualizarPontoDoDia = async (req, res) => {
+  const { id, data } = req.params;
+  const { horarios } = req.body;
+
+  if (!Array.isArray(horarios)) {
+    return res.status(400).json({ msg: 'Horários inválidos.' });
+  }
+
+  try {
+    const dataNormalizada = new Date(`${data}T00:00:00`);
+
+    const horariosConvertidos = horarios
+    .filter(h => /^\d{2}:\d{2}$/.test(h))
+    .map(h => {
+      const [hh, mm] = h.split(':');
+      const dt = new Date(`${data}T${hh.padStart(2, '0')}:${mm.padStart(2, '0')}:00`);
+      return new Date(dt.getTime()); 
+    });
+
+    if (horariosConvertidos.some(h => isNaN(h.getTime()))) {
+      return res.status(400).json({ msg: 'Um ou mais horários são inválidos.' });
+    }
+
+    let ponto = await Ponto.findOne({ usuario: id, data: dataNormalizada });
+
+    if (!ponto) {
+      return res.status(404).json({ msg: 'Ponto não encontrado para esta data.' });
+    }
+
+    ponto.horarios = horariosConvertidos;
+    await ponto.save();
+
+    res.status(200).json({ msg: 'Ponto atualizado com sucesso.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Erro ao atualizar ponto.' });
+  }
+};
+
+exports.ultimosPontosDoDia = async (req, res) => {
+  const idAdmin = req.usuario.id;
+
+  try {
+    const admin = await Usuario.findById(idAdmin).populate('empresa');
+    if (!admin || admin.tipo !== 'administrador') {
+      return res.status(403).json({ msg: 'Acesso negado. Apenas administradores.' });
+    }
+
+    const hoje = new Date();
+    const inicioDoDia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+
+    // Buscar usuários da mesma empresa
+    const funcionarios = await Usuario.find({ empresa: admin.empresa._id, tipo: 'funcionario' });
+    const idsFuncionarios = funcionarios.map(f => f._id);
+
+    // Buscar pontos de hoje desses usuários
+    const pontos = await Ponto.find({
+      usuario: { $in: idsFuncionarios },
+      data: inicioDoDia
+    }).populate('usuario');
+
+    // Montar lista com nome, horário e tipo
+    let ultimos = [];
+
+    pontos.forEach(ponto => {
+      ponto.horarios.forEach((h, i) => {
+        ultimos.push({
+          nome: ponto.usuario.nomeCompleto,
+          horario: h,
+          tipo: ['1ª Entrada', '1ª Saída', '2ª Entrada', '2ª Saída'][i]
+        });
+      });
+    });
+
+    // Ordenar por horário (mais recentes primeiro)
+    ultimos.sort((a, b) => new Date(b.horario) - new Date(a.horario));
+
+    // Limitar aos últimos 10
+    ultimos = ultimos.slice(0, 10);
+
+    // Calcular funcionários ativos
+    let ativos = 0;
+    for (const ponto of pontos) {
+      const qtd = ponto.horarios.length;
+      if (qtd === 1 || qtd === 3) ativos++; // só entrada(s), sem saída correspondente
+    }
+
+    res.json({ ultimos, ativos });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Erro ao carregar dashboard.' });
   }
 };

@@ -23,7 +23,16 @@ const Login = ({ onLogin }) => {
       localStorage.setItem('token', token);
       localStorage.setItem('usuario', JSON.stringify(usuario));
 
-      if (onLogin) onLogin(usuario);
+      if (onLogin) {
+      onLogin(usuario);
+
+      // Redireciona manualmente baseado no tipo
+      if (usuario.tipo === 'administrador') {
+        window.location.href = '/dashboard';
+      } else if (usuario.tipo === 'funcionario') {
+        window.location.href = '/dashfuncionario';
+      }
+    }
     } catch (err) {
       setErro(err.response?.data?.msg || 'Erro ao fazer login.');
     }

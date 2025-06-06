@@ -10,10 +10,10 @@ router.get('/meus', authMiddleware, pontoController.listarMeusPontos);
 
 router.get('/usuario/:id', authMiddleware, pontoController.listarPontoDeUsuario);
 
-// Funcionário baixa sua folha
-router.get('/pdf', authMiddleware, pontoController.gerarPdfPontoFuncionario);
+router.post('/manual', authMiddleware, pontoController.inserirPontoManual);
 
-// Admin baixa de outro funcionário
-router.get('/pdf/:id', authMiddleware, pontoController.gerarPdfPontoFuncionario);
+router.put('/atualizar/:id/:data', authMiddleware, pontoController.atualizarPontoDoDia);
+
+router.get('/ultimos', authMiddleware, pontoController.ultimosPontosDoDia);
 
 module.exports = router;

@@ -18,3 +18,10 @@
   font-weight: 600;
   color: #333;
 }
+
+.header {
+  display: flex;
+  align-items: center;
+  font-size: 17px;
+  color: #333;
+}

@@ -26,7 +26,7 @@ const Sidebar = () => {
           Cargos
         </Link>
         <Link to="/dashboard/empresas" className={isActive('/dashboard/empresas') ? 'active' : ''}>
-          Empresas
+          Empresa
         </Link>
         <Link to="/dashboard/administradores" className={isActive('/dashboard/administradores') ? 'active' : ''}>
           Administradores

@@ -64,7 +64,7 @@ const Cargos = () => {
       const msg = error.response?.data?.msg || "Erro ao excluir cargo.";
       alert(msg);
     }
-  };  
+  };
 
   return (
       <div className="card">
@@ -99,7 +99,7 @@ const Cargos = () => {
             {cargosPaginados.map((cargo, index) => (
               <tr key={index}>
                 <td>{cargo.nome}</td>
-                <td>{cargo.totalFuncionarios || 0}</td>
+                <td>{cargo.quantidadeFuncionarios || 0}</td>
                 <td className="acoes">
                     <FaEdit className="acao editar" onClick={() => navigate(`/dashboard/EditarCargo/${cargo.id}`)} />
                 </td>

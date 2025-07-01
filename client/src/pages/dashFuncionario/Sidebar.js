@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import logo from '../../assets/logo.png';
 
 
 const Sidebar = () => {
@@ -8,8 +9,9 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <div className="logo">
-        PointLog
+      <div className="logo-title">
+        <img src={logo} alt="Logomarca" className="logo-small" />
+        <h1>PointLog</h1>
       </div>
 
       <nav className="menu">

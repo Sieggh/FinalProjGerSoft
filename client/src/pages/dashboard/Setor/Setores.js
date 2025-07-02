@@ -70,9 +70,9 @@ const Setores = () => {
       <div className="card">
         <div className="card-header">
           <h3>Setores da {empresa}</h3>
-          <button className="btn-adicionar" onClick={() => navigate('/dashboard/CadastroSetor')}>+ Adicionar</button>
+          
         </div>
-
+        <button className="btn-adicionar" onClick={() => navigate('/dashboard/CadastroSetor')}>Adicionar</button>
         <div className="card-controls">
           <input 
             type="text" 

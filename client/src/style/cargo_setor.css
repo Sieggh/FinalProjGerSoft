@@ -1,23 +1,18 @@
 .btn-adicionar {
   background-color: #5a4df3;
   color: white;
-  padding: 8px 16px;
+  padding: 12px 12px;
   border: none;
-  font-weight: 500;
+  font-weight: 700;
   border-radius: 5px;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(90, 77, 243, 0.3);
 }
 
-/* Busca */
-.card-controls {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 10px;
-}
 
 .input-busca {
-  padding: 6px 10px;
+  width: 30rem;
+  padding: 10px 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
@@ -65,7 +60,7 @@
 .paginacao {
   margin-top: 15px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 5px;
 }
 

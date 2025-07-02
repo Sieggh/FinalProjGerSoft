@@ -70,9 +70,8 @@ const Cargos = () => {
       <div className="card">
         <div className="card-header">
           <h3>Cargos da {empresa}</h3>
-          <button className="btn-adicionar" onClick={() => navigate('/dashboard/CadastroCargo')}>+ Adicionar</button>
         </div>
-
+        <button className="btn-adicionar" onClick={() => navigate('/dashboard/CadastroCargo')}>Adicionar</button>
         <div className="card-controls">
           <input
             type="text"

@@ -65,8 +65,8 @@ const Funcionarios = () => {
     <div className="card">
       <div className="card-header">
         <h3>Funcionários Cadastrados</h3>
-        <button className="btn-adicionar" onClick={() => navigate('/dashboard/CadastroFuncionario')}>+ Adicionar</button>
         </div>
+        <button className="btn-adicionar" onClick={() => navigate('/dashboard/CadastroFuncionario')}>Adicionar</button>
 
         <div className="card-controls">
           <input

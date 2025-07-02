@@ -43,7 +43,7 @@ form {
   align-items: center;
 }
 
-input, button {
+.iptLogin, .btnLogin {
   margin: 0.5rem 0;
   padding: 0.75rem;
   width: 100%;
@@ -52,25 +52,19 @@ input, button {
   box-sizing: border-box;
 }
 
-button {
+.btnLogin {
   font-weight: 500;
 }
 
-input:hover, button:hover {
+.iptLogin:hover, .btnLogin:hover {
   cursor: pointer;
 }
 
-button:hover {
+.btnLogin:hover {
   background-color: #cbcbcb;
 }
 
-p {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  text-align: center;
-}
-
-h1, p {
+.h1Login {
   color: aliceblue;
   font-weight: 700;
 }

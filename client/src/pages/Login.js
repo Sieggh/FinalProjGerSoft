@@ -50,11 +50,12 @@ const Login = ({ onLogin }) => {
         <div className="container">
           <div className="logo-title">
             <img src={logo} alt="Logomarca" className="logo-small" />
-            <h1>PointLog</h1>
+            <h1 className='h1Login'>PointLog</h1>
           </div>
           <form onSubmit={handleSubmit}>
             <input
               type="text"
+              className='iptLogin'
               placeholder="Email ou Matrícula"
               value={identificador}
               onChange={(e) => setIdentificador(e.target.value)}
@@ -62,12 +63,13 @@ const Login = ({ onLogin }) => {
             />
             <input
               type="password"
+              className='iptLogin'
               placeholder="Senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               required
             />
-            <button type="submit">Entrar</button>
+            <button className='btnLogin' type="submit">Entrar</button>
           </form>
           {erro && <p style={{ color: 'red' }}>{erro}</p>}
         </div>

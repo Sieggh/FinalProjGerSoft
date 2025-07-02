@@ -47,11 +47,10 @@ const Administradores = () => {
     <div className="card">
       <div className="card-header">
         <h3>Administradores Cadastrados</h3>
-        <button className="btn-adicionar" onClick={() => navigate('/dashboard/CadastroAdmin')}>
-          + Adicionar
-        </button>
       </div>
-
+      <button className="btn-adicionar" onClick={() => navigate('/dashboard/CadastroAdmin')}>
+          Adicionar
+        </button>
       <div className="card-controls">
           <input
             type="text"
